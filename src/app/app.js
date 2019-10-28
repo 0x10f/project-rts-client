@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
 import PerlinNoise from '../utils/perlin';
+import * as dat from 'dat.gui';
 
-class PerlinNoiseTexture {
+class PerlinNoiseDataTexture {
     constructor(width, height, stride, offsetX, offsetY, octaves, persistence) {
         this.width = width;
         this.height = height;
@@ -57,7 +58,7 @@ export default class App {
 
         const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
 
-        this.texture = new PerlinNoiseTexture(512, 512, 0x200, 0x0, 0x0, 5, 0.6);
+        this.texture = new PerlinNoiseDataTexture(512, 512, 0x200, 0x0, 0x0, 5, 0.6);
         const materials = [ new THREE.MeshBasicMaterial({map: this.texture.threeTexture}), ];
 
         this.surface = new THREE.Mesh(geometry, materials);
@@ -65,6 +66,13 @@ export default class App {
         this.scene.add(this.surface);
 
         this.counter = 0;
+
+        this.gui = new dat.GUI();
+        this.gui.add(this.texture, 'stride', 0, 2048, 1).onFinishChange(() => this.texture.update());
+        this.gui.add(this.texture, 'offsetX', -5000, 5000).onFinishChange(() => this.texture.update());
+        this.gui.add(this.texture, 'offsetY', -5000, 5000).onFinishChange(() => this.texture.update());
+        this.gui.add(this.texture, 'octaves', 1, 8, 1).onFinishChange(() => this.texture.update());
+        this.gui.add(this.texture, 'persistence', 0, 1).onFinishChange(() => this.texture.update());
 
         this.render(0);
     }
@@ -80,16 +88,14 @@ export default class App {
     }
 
     render(time) {
-        time *= 0.01;
-
         this.counter++;
 
-        if ((this.counter % 60) === 0) {
+        /*if ((this.counter % 60) === 0) {
             console.log("Ping");
             this.texture.offsetX = Math.floor(Math.random() * 0x1000);
             this.texture.offsetY = Math.floor(Math.random() * 0x1000);
             this.texture.update();
-        }
+        }*/
 
         if (this.resize()) {
             const canvas = this.renderer.domElement;
