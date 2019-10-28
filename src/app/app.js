@@ -15,6 +15,7 @@ class PerlinNoiseDataTexture {
         this.offsetY = offsetY;
         this.octaves = octaves;
         this.persistence = persistence;
+        this.threshold = 0.5;
         this.update();
     }
 
@@ -26,7 +27,7 @@ class PerlinNoiseDataTexture {
 
             let noise = (PerlinNoise.octave2n(x, y, this.octaves, this.persistence) + 1) / 2;
 
-            if (noise < 0.5) noise = 0.0;
+            if (noise < this.threshold) noise = 0.0;
 
             this.buffer[pos+0] = Math.floor(255 * noise);
             this.buffer[pos+1] = Math.floor(255 * noise);
@@ -73,6 +74,7 @@ export default class App {
         this.gui.add(this.texture, 'offsetY', -5000, 5000).onFinishChange(() => this.texture.update());
         this.gui.add(this.texture, 'octaves', 1, 8, 1).onFinishChange(() => this.texture.update());
         this.gui.add(this.texture, 'persistence', 0, 1).onFinishChange(() => this.texture.update());
+        this.gui.add(this.texture, 'threshold', 0, 1).onFinishChange(() => this.texture.update());
 
         this.render(0);
     }
