@@ -30,9 +30,7 @@ const F = [
     4093,4094,4094,4095,4095,4095,4095,4095,4095,4095
 ];
 
-const lerp = (t, a, b) => {
-    return a + (t * (b - a) >> 12);
-};
+const lerp = (t, a, b) => a + (t * (b - a) >> 12);
 
 const fade = (t) => {
     // Lerp between subsequent entries in the table.
