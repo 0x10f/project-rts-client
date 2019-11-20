@@ -11,11 +11,15 @@ export default class App {
         this.stage = new Stage({viewport: this.viewport});
 
         this.mouse = new Mouse(canvas);
+
         this.mouseWheel = new MouseWheel(canvas);
 
         // Mouse wheel zoom scale is the amount to increment or decrement the zoom per pixel of how much the
         // document would have moved.
-        this.mouseWheelZoomPerUnit = -0.00025;    // 0.00025 per pixel
+        this.mouseWheelZoomPerUnit = 0.00025;    // 0.00025 per pixel
+
+        // Flag for if the mouse wheel zoom direction should be inverted (moving forward zooms out instead of in).
+        this.invertMouseWheelZoom = false;
 
         // Flag which is set when the user is currently panning the camera. This is set when the mouse is
         // held and the flag is enabled. It is disabled when the mouse is no longer being held and the
@@ -76,7 +80,9 @@ export default class App {
         // increment the zoom by the amount the mouse moved times the mouse wheel zoom scale.
         if (this.mouseWheel.isMoved()) {
             const previous = this.viewport.zoom;
-            this.viewport.incrementZoom(this.mouseWheel.delta * this.mouseWheelZoomPerUnit);
+
+            const invert = this.invertMouseWheelZoom ? -1 : 1;
+            this.viewport.incrementZoom(this.mouseWheel.delta * this.mouseWheelZoomPerUnit * invert);
 
             console.log(
                 "Updated viewport zoom [Wheel Delta: %s, Old: %s, New: %s]",
@@ -94,6 +100,7 @@ export default class App {
         //      + Offset viewport by vector computed from the last known mouse position and current mouse position.
         // - Mouse panning is active but the mouse is not being held:
         //      + Disable mouse panning, reset the last known mouse position.
+        // - Mouse panning is not active and the moust being not held does nothing.
         if (!this.mousePanningActive && this.mouse.isHeld()) {
             this.mousePanningPoint.set(this.mouse.x, this.mouse.y);
             this.mousePanningActive = true;
@@ -101,7 +108,7 @@ export default class App {
 
         if (this.mousePanningActive && this.mouse.isHeld()) {
             const delta = new THREE.Vector2(this.mouse.x, this.mouse.y).sub(this.mousePanningPoint);
-            this.viewport.offset(delta.negate().multiplyScalar(this.viewport.squaresPerPixel));
+            this.viewport.offsetPosition(delta.negate().multiplyScalar(this.viewport.squaresPerPixel));
             this.mousePanningPoint.set(this.mouse.x, this.mouse.y);
         }
 

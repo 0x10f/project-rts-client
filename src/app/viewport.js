@@ -71,7 +71,7 @@ export default class Viewport {
      *
      * @param vector the vector to offset the position by.
      */
-    offset(vector) {
+    offsetPosition(vector) {
         this.setPosition(this.position.add(vector));
     }
 
